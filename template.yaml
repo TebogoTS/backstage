@@ -1,0 +1,36 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: github-actions-template
+  title: GitHub Actions Template
+  description: Template for creating GitHub Actions workflow
+spec:
+  owner: team:devops
+  type: workflow
+  parameters:
+    - title: Project Details
+      required:
+        - name
+      properties:
+        name:
+          title: Project Name
+          type: string
+          description: The name of your project
+  steps:
+    - id: fetch-files
+      name: Fetch Files
+      action: fetch:template
+      input:
+        url: ./content
+        values:
+          name: '{{ parameters.name }}'
+    - id: publish
+      name: Publish to GitHub
+      action: publish:github
+      input:
+        repoUrl: https://github.com/your-org/{{ parameters.name }}
+        allowedHosts: ['github.com']
+  output:
+    links:
+      - title: Repository
+        url: '{{ steps.publish.output.remoteUrl }}'
